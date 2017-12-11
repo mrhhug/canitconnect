@@ -1,0 +1,255 @@
+/*
+ * @author: Dean Hassan (Dean.Hassan@Fiserv.com)
+ */
+
+@font-face {
+	font-family: 'Source Sans Pro';
+	src: url('../font/SourceSansPro-Regular.ttf');
+}
+
+* {
+	box-sizing: border-box;
+	margin: 0;
+	font-family: 'Source Sans Pro', sans-serif;
+}
+
+body {
+	height: 100vh;
+	overflow: none;
+}
+
+p {
+	text-align: left;
+}
+
+header {
+	position: fixed;
+	width: 100%;
+}
+
+header, footer {
+	background-color: #243640;
+	color: #ffffff;
+	padding: 5px;
+}
+
+footer {
+	margin-bottom: 50px;
+}
+
+header .brand {
+	display: flex;
+	flex-direction: row;
+	justify-content: flex-start;
+	align-items: center;
+	cursor: pointer;
+}
+
+.brand img {
+	width: 60px;
+	margin: auto 8px;
+}
+
+.brand h3 {
+	margin-right: 3px;
+	margin: 3px;
+}
+
+.brand h3:nth-of-type(1) {
+	font-weight: 580;
+}
+
+.brand h3:nth-of-type(2) {
+	font-weight: 600 !IMPORTANT;
+}
+
+.main-content {
+	position: fixed;
+	top: 70px;
+	width: 100%;
+	height: 100%;
+	display: flex;
+	flex-direction: row;
+	justify-content: flex-start;
+}
+
+nav {
+	background-color: #232b2f;
+	color: #EAEDEF;
+	min-width: 300px;
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+nav ul {
+	list-style: none;
+	padding: 5px 0;	
+}
+
+nav ul li {
+	display: block;
+	padding: 10px 15px;
+	white-space: nowrap;
+	background-color: #243640;
+	margin: 2px auto;
+	height: 40px;
+	cursor: pointer;
+}
+
+li.active {
+	border-left: 3px solid #f60;
+}
+
+.enterprise-cloud-logo {
+	bottom: 0;
+	margin: 0 auto;
+	margin-bottom: 100px;
+}
+
+main {
+	background-color: #EAEDEF;
+	width: 100%;
+	height: 100%;
+	overflow: scroll;
+}
+
+.card {
+	background-color: #FFFFFF;
+	margin: 15px;
+	padding: 15px;
+	border-radius: 2px;
+	box-shadow: 0 3px 6px rgba(0,0,0,0.23);
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+}
+
+.card .form-div {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: stretch;
+	width: 400px;
+	margin: 50px auto;
+}
+
+.card .form-div * {
+	height: 40px;
+	margin: 5px;
+	font-size: 100%;
+	padding: 6px;
+	text-align: center;
+	border-radius: 2px;
+}
+
+.card .card-contents {
+	min-height: 200px;	
+	display: flex;
+	flex-direction: column;
+	justify-content: space-around;
+	align-items: center;
+}
+
+.card-contents p {
+	margin: 10px;
+}
+
+#username {
+	border: 1px solid gray;
+}
+
+.btn {
+	background-color: #1b78b3;
+	color: #FFFFFF;
+	padding: 6px 15px;
+	border: 1px solid #0e5bcc;
+	border-bottom: 4px solid #0e5bcc;
+	border-radius: 2px;
+	text-decoration: none;
+	text-transform: uppercase;
+	cursor: pointer;
+}
+
+.btn:focus,
+.btn:hover {
+	background-color: #188cd6;
+}
+
+.btn:active {
+	margin-top: 6px;
+	border-bottom: 1px solid #0e5bcc;
+}
+
+.disabled-btn {
+	background-color: #eaedef;
+	color: #9a9b9c;
+	padding: 6px 15px;
+	border: 1px solid #9a9b9c;
+	border-bottom: 4px solid #9a9b9c;
+	border-radius: 2px;
+	text-decoration: none;
+	text-transform: uppercase;
+	cursor: pointer;
+}
+
+/*
+.disabled-btn:focus,
+.disabled-btn:hover {
+	background-color: #188cd6;
+}
+*/
+
+.disabled-btn:active {
+	margin-top: 6px;
+	border-bottom: 1px solid #9a9b9c;
+}
+
+.external-link-btn {
+	background-color: #1b78b3;
+	color: #FFFFFF;
+	margin: 5px;
+	padding: 15px 25px;
+	border: 1px solid #0e5bcc;
+	border-bottom: 4px solid #0e5bcc;
+	border-radius: 2px;
+	text-decoration: none;
+	cursor: pointer;
+}
+
+.external-link-btn:focus,
+.external-link-btn:hover {
+	background-color: #188cd6;
+}
+
+.external-link-btn:active {
+	margin-top: 6px;
+	border-bottom: 1px solid #0e5bcc;
+}
+
+.user-info {
+        display: flex;
+        flex-direction: row;
+}
+
+.user-info .left {
+        display: flex;
+        flex-direction: column;
+        padding: 5px;
+        text-align: end;
+}
+
+.user-info .center {
+        display: flex;
+        flex-direction: column;
+        padding: 5px;
+}
+
+.user-info .right {
+        display: flex;
+        flex-direction: column;
+        padding: 5px;
+        text-align: start;
+}

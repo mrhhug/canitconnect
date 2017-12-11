@@ -1,0 +1,8 @@
+---
+applications:
+- name: canitconnect
+  memory: 512M
+  instances: 1
+  path: .
+  buildpack: python_buildpack_current
+  command: python main.py

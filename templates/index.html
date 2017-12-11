@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+{{ indexComment|safe }}
+<html>
+<head>
+	<title>{{ enterprise }} PCF Traceroute </title>
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+	<link rel="shortcut icon" href="{{ url_for('static', filename='img/favicon.ico') }}"/>
+</head>
+<body>
+	<header>
+		<div class="brand" onclick="window.location='.';">
+			<img src="{{ headerImg }}"/>
+			<h3>{{ enterprise }}</h3>
+			<h3>PCF Connection Test</h3>
+		</div>
+	</header>
+	<div class="main-content">
+		<nav>
+			<ul>
+				<li class="nav-btn" id="traceroute"><a>Traceroute</a></li>
+				<li class="nav-btn" id="telnet"><a>Telnet</a></li>
+			</ul>
+			<img class="enterprise-cloud-logo" src="{{ footerImg }}">
+		</nav>
+		<main>
+			<div class="card" id="traceroute-card">
+				<div class="card-contents">
+					<div class="form-div">
+						<p>This allows you to run traceroutes from a diego cell.</p>
+						<input type="text" placeholder="host" id="traceroutehostname">
+						<button id="traceroute-btn" class="btn">traceroute</button>
+					</div>
+                                        <p class="response-body" id="response-body-traceroute"></p>
+				</div>
+			</div>
+			<div class="card" id="telnet-card">
+				<div class="card-contents">
+					<div class="form-div">
+						<p>This allows you to run telnet from a diego cell.</p>
+						<input type="text" placeholder="host" id="telnethostname">
+						<input type="text" placeholder="port" id="telnetport">
+						<button id="telnet-btn" class="btn">telnet</button>
+					</div>
+                                        <p class="response-body" id="response-body-telnet"></p>
+				</div>	
+			</div>
+			<footer>
+				<p>Copyright &copy; 2017 {{ enterprise }}, Inc. For {{ enterprise }} internal use only. All rights reserved.</p>
+			</footer>
+		</main>
+	</div>
+	<script src="{{ url_for('static', filename='js/jquery-3.2.1.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+	<script>
+		$('.nav-btn').click(function() {
+			var id=$(this).attr('id');
+			var st=$('#'+id+'-card').offset().top - 70;
+			console.log(st);
+			if(st!=0) {
+				$('main').animate({
+					scrollTop: st
+				}, 1000);
+			}			
+		});
+	
+
+                setInterval(function() {
+                        var docViewTop = $(window).scrollTop();
+                        var docViewBottom = docViewTop + $(window).height();
+                        $('.card').each(function() {
+                                var id=$(this).attr('id');
+                                var btnId='#'+ id.replace(/-card/, '');
+                                if($(this).offset().top > docViewTop && ($(this).offset().top < docViewBottom || ($(this).offset().top+$(this).height()) < docViewBottom)) {
+                                        $(btnId).addClass('active');
+                                } else {
+                                        $(btnId).removeClass('active');
+                                }
+                        });
+                }, 500);
+	
+	</script>
+</body>
+</html>
