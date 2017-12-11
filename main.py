@@ -21,7 +21,7 @@ def root():
  /  \ /  <   |  | |    __)_ /    \   __\/ __ \_  __ \____ \_  __ \  |/  ___// __ \ 
 /    Y    \___  | |        \   |  \  | \  ___/|  | \/  |_> >  | \/  |\___ \\  ___/ 
 \____|__  / ____|/_______  /___|  /__|  \___  >__|  |   __/|__|  |__/____  >\___  >
-      \/\/             \/     \/          \/      |__|                 \/     \/ 
+        \/\/             \/     \/          \/      |__|                 \/     \/ 
 -->'''
 	return render_template('index.html', enterprise=enterprise, headerImg=headerImg, footerImg=footerImg, indexComment=indexComment)
 
