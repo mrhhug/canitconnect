@@ -40,4 +40,10 @@ $('#telnet-btn').click(function() {
         },
 	dataType: 'json'
     });
-});
+}
+var localhost = window.location.hostname
+var restResponse = 'GET api/traceroute/&lthost&gt <br>'
+restResponse += 'curl "https://' + localhost + '/api/traceroute/' + localhost + '"<br>'
+restResponse += 'GET api/telnet/&lthost&gt/&ltport&gt <br>'
+restResponse += 'curl "https://' + localhost + '/api/telnet/' + localhost + '/443"'
+$('#response-body-rest').html(restResponse););
