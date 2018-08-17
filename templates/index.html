@@ -2,7 +2,7 @@
 {{ indexComment|safe }}
 <html>
 <head>
-	<title>{{ enterprise }} PCF Traceroute </title>
+	<title>{{ enterprise }} PCF can it connect - traceroute | telnet | wget </title>
 	<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 	<link rel="shortcut icon" href="{{ url_for('static', filename='img/favicon.ico') }}"/>
 </head>
@@ -19,6 +19,8 @@
 			<ul>
 				<li class="nav-btn" id="traceroute"><a>Traceroute</a></li>
 				<li class="nav-btn" id="telnet"><a>Telnet</a></li>
+				<li class="nav-btn" id="wget"><a>Wget</a></li>
+				<li class="nav-btn" id="datetime"><a>Datetime</a></li>
 				<li class="nav-btn" id="REST"><a>REST API</a></li>
 			</ul>
 			<img class="enterprise-cloud-logo" src="{{ footerImg }}">
@@ -45,12 +47,32 @@
                                         <p class="response-body" id="response-body-telnet"></p>
 				</div>	
 			</div>
+			<div class="card" id="wget-card">
+				<div class="card-contents">
+					<div class="form-div">
+						<p>Run wget from a diego cell, respects proxy settings</p>
+						<input type="text" placeholder="https://www.fiserv.com/" id="wgethostname">
+						<button id="wget-btn" class="btn">wget (truncates body after 500 chars)</button>
+						<button id="wgetVars-btn" class="btn">Display related Environmental variables</button>
+					</div>
+                                        <p class="response-body" id="response-body-wget"></p>
+				</div>	
+			</div>
+			<div class="card" id="datetime-card">
+				<div class="card-contents">
+					<div class="form-div">
+						<p>Fetch the datetime from the diego cell.</p>
+						<button id="datetime-btn" class="btn">datetime</button>
+					</div>
+                                        <p class="response-body" id="response-body-datetime"></p>
+				</div>	
+			</div>
 			<div class="card" id="REST-card">
 				<div class="card-contents">
 					<div class="form-div">
 						<p>REST examples</p>
 					</div>
-                                        <p class="response-body" id="response-body-rest">javascript not loading</p>
+                                        	<p class="response-body" id="response-body-rest">javascript not loading</p>
 				</div>	
 			</div>
 			<footer>
@@ -58,7 +80,7 @@
 			</footer>
 		</main>
 	</div>
-	<script src="{{ url_for('static', filename='js/jquery-3.2.1.min.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/jquery-3.3.1.min.js') }}"></script>
         <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 	<script>
 		$('.nav-btn').click(function() {

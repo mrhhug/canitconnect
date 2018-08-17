@@ -1,9 +1,15 @@
-from flask import Flask, render_template
+#!/usr/bin/python2
+
+from flask import Flask, render_template, request
 from os import getenv
 from subprocess import Popen, PIPE
-from socket import socket, AF_INET, SOCK_STREAM 
+from socket import socket, AF_INET, SOCK_STREAM, gaierror
 from errno import errorcode
 from json import dumps
+from time import time 
+import ssl
+import urllib2
+from datetime import datetime
 
 app = Flask(__name__)
 
@@ -11,38 +17,86 @@ port = int(getenv("PORT",8081))
 
 @app.route('/')
 def root():
-	enterprise = 'Michael is Metal'
-	headerImg = 'data:image/png;base64,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'
-	footerImg = headerImg
-	indexComment = ''' <!-- @Author: Michael Hug (mrhhug at g mail) -->
+	enterprise = 'Fiserv'
+	headerImg = 'data:image/png;base64,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'
+	footerImg = 'data:image/png;base64,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'
+	indexComment = ''' <!-- @Author: Michael Hug (Michael.Hug@fiserv.com) MichaelIsMetal-->
 <!--
-   _____  .__       .__                  .__    .__            _____          __         .__   
-  /     \ |__| ____ |  |__ _____    ____ |  |   |__| ______   /     \   _____/  |______  |  |  
- /  \ /  \|  |/ ___\|  |  \\__  \ _/ __ \|  |   |  |/  ___/  /  \ /  \_/ __ \   __\__  \ |  |  
-/    Y    \  \  \___|   Y  \/ __ \\  ___/|  |__ |  |\___ \  /    Y    \  ___/|  |  / __ \|  |__
-\____|__  /__|\___  >___|  (____  /\___  >____/ |__/____  > \____|__  /\___  >__| (____  /____/
-        \/        \/     \/     \/     \/               \/          \/     \/          \/      
--->'''
+  .d88"
+  d88P'
+  888
+8888888 888  .d888b.   ,d888b.  88.d8b 88b    d88
+  888   888 88K   888 d8K' `Y8b 888P*" '88.  ;88'
+  888   888 888ho.    888   888 888     "8"  "8"
+  888   888   "Y888b. 888888888 888     'Y8;;8P'
+  888   888      'Y88 Y8b.      888      Y8bd8P  
+  888   888 888  ,888 Y8b.  .d8 888      'Y88P'  888
+  888   888  "Y888P"   "Y8888"  888       "88"   888
+-->'''	
 	return render_template('index.html', enterprise=enterprise, headerImg=headerImg, footerImg=footerImg, indexComment=indexComment)
 
-@app.route('/api/traceroute/<host>')
-def treaceroute(host):
-	#p = Popen(["/usr/sbin/traceroute", host], stdout=PIPE, stderr=PIPE)
-	p = Popen(["traceroute", host], stdout=PIPE, stderr=PIPE)
+@app.route('/api/traceroute/<host>', defaults={'maxttl': "30"})
+@app.route('/api/traceroute/<host>/<maxttl>')
+def treaceroute(host, maxttl):
+	p = Popen(["traceroute", "-m", maxttl, host], stdout=PIPE, stderr=PIPE)
 	results = p.communicate()
 	return dumps({"stdout":results[0],"stderr":results[1]})
 
-@app.route('/api/telnet/<host>/<port>')
-def telnet(host, port):
-	s = socket(AF_INET, SOCK_STREAM)
-	result = s.connect_ex((host, int(port)))
-	s.close()
-	ret = {}
-	if result:
-		ret['return'] = 1
-	else:
-		ret['return'] = 0
-	return dumps(ret)
+@app.route('/api/telnet/<host>/<port>', defaults={'timeout': 7})
+@app.route('/api/telnet/<host>/<port>/<timeout>')
+def telnet(host, port, timeout):
+        ret = {}
+        s = socket(AF_INET, SOCK_STREAM)
+        s.settimeout(timeout)
+        start = time()
+        try:
+                result = s.connect_ex((host, int(port)))
+        except gaierror:
+                ret['return'] = 1
+                ret['status'] = 404
+                ret['elapsed'] = -1
+                return dumps(ret)
+        elapsed = format(time()-start, '.4f')
+        s.close()
+        if result:
+                ret['return'] = 1
+                ret['status'] = 408
+                ret['elapsed'] = elapsed
+        else:
+                ret['return'] = 0
+                ret['status'] = 200
+                ret['elapsed'] = elapsed
+        return dumps(ret)
+
+@app.route('/api/wget', defaults={'chars': 500})
+@app.route('/api/wget/<chars>')
+def wget(chars):
+	host = request.args.get('url')
+	try:
+		r = urllib2.urlopen(host, timeout = 3, context=ssl._create_unverified_context())
+	except urllib2.URLError: 
+		return dumps({"code":"URLError" ,"url":"URLError","body":"URLError","headers":["URLError"]})
+	except socket.timeout:
+		return dumps({"code":"timeout" ,"url":"timeout","body":"timeout","headers":["timeout"]})
+	body = unicode(r.read(), errors='ignore')
+	if chars > 0:
+		body = body[:int(chars)] 
+	url = r.geturl()
+	code = r.code
+	headers = r.info().headers
+	r.close()
+	return dumps({"code":code,"url":url,"body":body,"headers":headers})
+
+@app.route('/api/wget/vars')
+def wgetVars():
+	http_proxy = getenv("http_proxy", "UNSET")
+	https_proxy = getenv("https_proxy", "UNSET")
+	no_proxy = getenv("no_proxy", "UNSET")
+	return dumps({"http_proxy":http_proxy,"https_proxy":https_proxy,"no_proxy":no_proxy})
+
+@app.route('/api/datetime')
+def datatimenow():
+	return dumps(dict(datetimestring=str(datetime.now())))
 
 if __name__ == '__main__':
 	app.run(host='0.0.0.0', port=port)

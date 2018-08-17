@@ -2,8 +2,8 @@
 applications:
 - name: canitconnect
   memory: 64M
-  disk_quota: 256M
+  disk: 64M
   instances: 1
   path: .
-  buildpack: python_buildpack_current
+  buildpack: python_buildpack
   command: python main.py
