@@ -1,6 +1,7 @@
 #!/usr/bin/python2
 
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, Response
+from waitress import serve
 from os import getenv
 from subprocess import Popen, PIPE
 from socket import socket, AF_INET, SOCK_STREAM, gaierror
@@ -35,15 +36,17 @@ def root():
 -->'''	
 	return render_template('index.html', enterprise=enterprise, headerImg=headerImg, footerImg=footerImg, indexComment=indexComment)
 
-@app.route('/api/traceroute/<host>', defaults={'maxttl': "30"})
-@app.route('/api/traceroute/<host>/<maxttl>')
+@app.route('/api/traceroute/<host>', defaults={'maxttl': "30"}, methods = ["GET"])
+@app.route('/api/traceroute/<host>/<maxttl>', methods = ["GET"])
 def treaceroute(host, maxttl):
 	p = Popen(["traceroute", "-m", maxttl, host], stdout=PIPE, stderr=PIPE)
 	results = p.communicate()
-	return dumps({"stdout":results[0],"stderr":results[1]})
+	ret =  dumps({"stdout":results[0],"stderr":results[1]})
+	print ret
+	return Response(ret, status=200, mimetype='application/json')
 
-@app.route('/api/telnet/<host>/<port>', defaults={'timeout': 7})
-@app.route('/api/telnet/<host>/<port>/<timeout>')
+@app.route('/api/telnet/<host>/<port>', defaults={'timeout': 7}, methods = ["GET"])
+@app.route('/api/telnet/<host>/<port>/<timeout>', methods = ["GET"])
 def telnet(host, port, timeout):
         ret = {}
         s = socket(AF_INET, SOCK_STREAM)
@@ -66,18 +69,17 @@ def telnet(host, port, timeout):
                 ret['return'] = 0
                 ret['status'] = 200
                 ret['elapsed'] = elapsed
-        return dumps(ret)
+        print dumps(ret)
+	return Response(dumps(ret), status=200, mimetype='application/json')
 
-@app.route('/api/wget', defaults={'chars': 500})
-@app.route('/api/wget/<chars>')
+@app.route('/api/wget', defaults={'chars': 500}, methods = ["GET"])
+@app.route('/api/wget/<chars>', methods = ["GET"])
 def wget(chars):
 	host = request.args.get('url')
 	try:
 		r = urllib2.urlopen(host, timeout = 3, context=ssl._create_unverified_context())
-	except urllib2.URLError: 
-		return dumps({"code":"URLError" ,"url":"URLError","body":"URLError","headers":["URLError"]})
-	except socket.timeout:
-		return dumps({"code":"timeout" ,"url":"timeout","body":"timeout","headers":["timeout"]})
+	except : 
+		return dumps({"code":"Exception" ,"url":"Exception","body":"Exception","headers":["Exception"]})
 	body = unicode(r.read(), errors='ignore')
 	if chars > 0:
 		body = body[:int(chars)] 
@@ -85,18 +87,24 @@ def wget(chars):
 	code = r.code
 	headers = r.info().headers
 	r.close()
-	return dumps({"code":code,"url":url,"body":body,"headers":headers})
+	ret = dumps({"code":code,"url":url,"body":body,"headers":headers})
+	print ret
+	return Response(ret, status=200, mimetype='application/json')
 
-@app.route('/api/wget/vars')
+@app.route('/api/wget/vars', methods = ["GET"])
 def wgetVars():
 	http_proxy = getenv("http_proxy", "UNSET")
 	https_proxy = getenv("https_proxy", "UNSET")
 	no_proxy = getenv("no_proxy", "UNSET")
-	return dumps({"http_proxy":http_proxy,"https_proxy":https_proxy,"no_proxy":no_proxy})
+	ret = dumps({"http_proxy":http_proxy,"https_proxy":https_proxy,"no_proxy":no_proxy})
+	print ret
+	return Response(ret, status=200, mimetype='application/json')
 
-@app.route('/api/datetime')
+@app.route('/api/datetime', methods = ["GET"])
 def datatimenow():
-	return dumps(dict(datetimestring=str(datetime.now())))
+	ret = dumps(dict(datetimestring=str(datetime.now())))
+	print ret
+	return Response(ret, status=200, mimetype='application/json')
 
 if __name__ == '__main__':
-	app.run(host='0.0.0.0', port=port)
+	serve(app, port=port)

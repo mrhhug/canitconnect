@@ -1,3 +1,4 @@
 Flask
 Popen
 PIPE
+waitress>0.9

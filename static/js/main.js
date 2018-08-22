@@ -71,8 +71,9 @@ $('#wget-btn').click(function() {
                 ret += "<tr><td>url</td><td>"+wgetResult["url"]+"</td></tr>";
                 ret += "<tr><td>Response Headers</td><td>"
 		//python api is sending this out as a list
+		console.log("adding whitespace after every n characters so the table does not run off the screen");
 		wgetResult["headers"].forEach(function(i) {
-			ret += i + "</br>"
+			ret += i.replace(/(.{100})/g,"$1 ") + "</br>"
 		});
 		ret += "</td></tr>";
                 ret += "<tr><td>Body</td><td>"+wgetResult["body"].replace(/</g,"&lt;").replace(/>/g,"&gt;")+"</td></tr>";
@@ -97,7 +98,7 @@ $('#wgetVars-btn').click(function() {
 		var ret = "<table><tr><th>Key</th><th>Value</th></tr>"
                 ret += "<tr><td>http_proxy</td><td>"+wgetVarsResult["http_proxy"]+"</td></tr>";
                 ret += "<tr><td>https_proxy</td><td>"+wgetVarsResult["https_proxy"]+"</td></tr>";
-		//makes it look neater on the page. will only break on whitespace
+		console.log("adding whitespace after every comma so the table does not run off the screen");
 		my_no_proxy = wgetVarsResult["no_proxy"].trim().replace(/,/g,", ")
                 ret += "<tr><td>no_proxy</td><td>"+my_no_proxy+"</td></tr>";
                 ret += "</table>"
