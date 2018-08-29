@@ -136,5 +136,6 @@ restResponse += 'curl "https://' + localhost + '/api/telnet/' + localhost + '/44
 restResponse += 'curl "https://' + localhost + '/api/telnet/' + localhost + '/443/8"<br>'
 restResponse += 'curl "https://' + localhost + '/api/wget?url=https://' + localhost + '"<br>'
 restResponse += 'curl "https://' + localhost + '/api/wget/501/?url=https://' + localhost + '"<br>'
+restResponse += 'curl "https://' + localhost + '/api/wget/vars<br>'
 restResponse += 'curl "https://' + localhost + '/api/datetime"<br>'
 $('#response-body-rest').html(restResponse);

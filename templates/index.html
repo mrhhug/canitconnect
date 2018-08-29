@@ -1,114 +1,114 @@
 <!DOCTYPE html>
 {{ indexComment|safe }}
 <html>
-<head>
-	<title>{{ enterprise }} PCF can it connect - traceroute | telnet | wget </title>
-	<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-	<link rel="shortcut icon" href="{{ url_for('static', filename='img/favicon.ico') }}"/>
-</head>
-<body>
-	<header>
-		<div class="brand" onclick="window.location='.';">
-			<img src="{{ headerImg }}"/>
-			<h3>{{ enterprise }}</h3>
-			<h3>PCF Connection Test</h3>
-		</div>
-	</header>
-	<div class="main-content">
-		<nav>
-			<ul>
-				<li class="nav-btn" id="traceroute"><a>Traceroute</a></li>
-				<li class="nav-btn" id="telnet"><a>Telnet</a></li>
-				<li class="nav-btn" id="wget"><a>Wget</a></li>
-				<li class="nav-btn" id="datetime"><a>Datetime</a></li>
-				<li class="nav-btn" id="REST"><a>REST API</a></li>
-			</ul>
-			<img class="enterprise-cloud-logo" src="{{ footerImg }}">
-		</nav>
-		<main>
-			<div class="card" id="traceroute-card">
-				<div class="card-contents">
-					<div class="form-div">
-						<p>This allows you to run traceroutes from a diego cell.</p>
-						<input type="text" placeholder="host" id="traceroutehostname">
-						<button id="traceroute-btn" class="btn">traceroute</button>
+	<head>
+		<title>{{ enterprise }} PCF can it connect - traceroute | telnet | wget </title>
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+		<link rel="shortcut icon" href="{{ url_for('static', filename='img/favicon.ico') }}"/>
+	</head>
+	<body>
+		<header>
+			<div class="brand" onclick="window.location='.';">
+				<img src="{{ headerImg }}"/>
+				<h3>{{ enterprise }}</h3>
+				<h3>PCF Connection Test</h3>
+			</div>
+		</header>
+		<div class="main-content">
+			<nav>
+				<ul>
+					<li class="nav-btn" id="traceroute"><a>Traceroute</a></li>
+					<li class="nav-btn" id="telnet"><a>Telnet</a></li>
+					<li class="nav-btn" id="wget"><a>Wget</a></li>
+					<li class="nav-btn" id="datetime"><a>Datetime</a></li>
+					<li class="nav-btn" id="REST"><a>REST API</a></li>
+				</ul>
+				<img class="enterprise-cloud-logo" src="{{ footerImg }}">
+			</nav>
+			<main>
+				<div class="card" id="traceroute-card">
+					<div class="card-contents">
+						<div class="form-div">
+							<p>Traceroute from a diego cell. 30 max hops.</p>
+							<input type="text" placeholder="host" id="traceroutehostname">
+							<button id="traceroute-btn" class="btn">traceroute</button>
+						</div>
+						<p class="response-body" id="response-body-traceroute"></p>
 					</div>
-                                        <p class="response-body" id="response-body-traceroute"></p>
 				</div>
-			</div>
-			<div class="card" id="telnet-card">
-				<div class="card-contents">
-					<div class="form-div">
-						<p>This allows you to run telnet from a diego cell.</p>
-						<input type="text" placeholder="host" id="telnethostname">
-						<input type="text" placeholder="port" id="telnetport">
-						<button id="telnet-btn" class="btn">telnet</button>
-					</div>
-                                        <p class="response-body" id="response-body-telnet"></p>
-				</div>	
-			</div>
-			<div class="card" id="wget-card">
-				<div class="card-contents">
-					<div class="form-div">
-						<p>Run wget from a diego cell, respects proxy settings</p>
-						<input type="text" placeholder="https://www.fiserv.com/" id="wgethostname">
-						<button id="wget-btn" class="btn">wget (truncates body after 500 chars)</button>
-						<button id="wgetVars-btn" class="btn">Display related Environmental variables</button>
-					</div>
-                                        <p class="response-body" id="response-body-wget"></p>
-				</div>	
-			</div>
-			<div class="card" id="datetime-card">
-				<div class="card-contents">
-					<div class="form-div">
-						<p>Fetch the datetime from the diego cell.</p>
-						<button id="datetime-btn" class="btn">datetime</button>
-					</div>
-                                        <p class="response-body" id="response-body-datetime"></p>
-				</div>	
-			</div>
-			<div class="card" id="REST-card">
-				<div class="card-contents">
-					<div class="form-div">
-						<p>REST examples</p>
-					</div>
-                                        	<p class="response-body" id="response-body-rest">javascript not loading</p>
-				</div>	
-			</div>
-			<footer>
-				<p>Copyright &copy; 2017 {{ enterprise }}, Inc. For {{ enterprise }} internal use only. All rights reserved.</p>
-			</footer>
-		</main>
-	</div>
-	<script src="{{ url_for('static', filename='js/jquery-3.3.1.min.js') }}"></script>
-        <script src="{{ url_for('static', filename='js/main.js') }}"></script>
-	<script>
-		$('.nav-btn').click(function() {
-			var id=$(this).attr('id');
-			var st=$('#'+id+'-card').offset().top - 70;
-			console.log(st);
-			if(st!=0) {
-				$('main').animate({
-					scrollTop: st
-				}, 1000);
-			}			
-		});
-	
+				<div class="card" id="telnet-card">
+					<div class="card-contents">
+						<div class="form-div">
+							<p>Telnet from a diego cell. 7 second timeout.</p>
+							<input type="text" placeholder="host" id="telnethostname">
+							<input type="text" placeholder="port" id="telnetport">
+							<button id="telnet-btn" class="btn">telnet</button>
+						</div>
+						<p class="response-body" id="response-body-telnet"></p>
+					</div>	
+				</div>
+				<div class="card" id="wget-card">
+					<div class="card-contents">
+						<div class="form-div">
+							<p>Wget from a diego cell, respects proxy settings. Truncates body at 500 chars. Adds spaces every 100 chars in header.</p>
+							<input type="text" placeholder="https://www.fiserv.com/" id="wgethostname">
+							<button id="wget-btn" class="btn">wget</button>
+							<button id="wgetVars-btn" class="btn">Display related Environmental variables</button>
+						</div>
+						<p class="response-body" id="response-body-wget"></p>
+					</div>	
+				</div>
+				<div class="card" id="datetime-card">
+					<div class="card-contents">
+						<div class="form-div">
+							<p>Fetch the datetime from the diego cell.</p>
+							<button id="datetime-btn" class="btn">datetime</button>
+						</div>
+						<p class="response-body" id="response-body-datetime"></p>
+					</div>	
+				</div>
+				<div class="card" id="REST-card">
+					<div class="card-contents">
+						<div class="form-div">
+							<p>REST examples</p>
+						</div>
+							<p class="response-body" id="response-body-rest">javascript not loading</p>
+					</div>	
+				</div>
+				<footer>
+					<p>Copyright &copy; 2017 {{ enterprise }}, Inc. For {{ enterprise }} internal use only. All rights reserved.</p>
+				</footer>
+			</main>
+		</div>
+		<script src="{{ url_for('static', filename='js/jquery-3.3.1.min.js') }}"></script>
+		<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+		<script>
+			$('.nav-btn').click(function() {
+				var id=$(this).attr('id');
+				var st=$('#'+id+'-card').offset().top - 70;
+				console.log(st);
+				if(st!=0) {
+					$('main').animate({
+						scrollTop: st
+					}, 1000);
+				}			
+			});
+		
 
-                setInterval(function() {
-                        var docViewTop = $(window).scrollTop();
-                        var docViewBottom = docViewTop + $(window).height();
-                        $('.card').each(function() {
-                                var id=$(this).attr('id');
-                                var btnId='#'+ id.replace(/-card/, '');
-                                if($(this).offset().top > docViewTop && ($(this).offset().top < docViewBottom || ($(this).offset().top+$(this).height()) < docViewBottom)) {
-                                        $(btnId).addClass('active');
-                                } else {
-                                        $(btnId).removeClass('active');
-                                }
-                        });
-                }, 500);
-	
-	</script>
-</body>
+			setInterval(function() {
+				var docViewTop = $(window).scrollTop();
+				var docViewBottom = docViewTop + $(window).height();
+				$('.card').each(function() {
+					var id=$(this).attr('id');
+					var btnId='#'+ id.replace(/-card/, '');
+					if($(this).offset().top > docViewTop && ($(this).offset().top < docViewBottom || ($(this).offset().top+$(this).height()) < docViewBottom)) {
+						$(btnId).addClass('active');
+					} else {
+						$(btnId).removeClass('active');
+					}
+				});
+			}, 500);
+		
+		</script>
+	</body>
 </html>
