@@ -88,6 +88,88 @@ $('#wget-btn').click(function() {
 	dataType: 'json'
     });
 });
+$('#sethttp-btn').click(function() {
+    var envalue=$('#envalue').val().trim();
+    var url= "api/setenv/http_proxy/" + envalue;
+    $('#response-body-envs').html('Please wait ...');
+    if ( envalue == "" ) {
+        $('#response-body-envs').html('Please enter a value.');
+    } else {
+	    $.ajax({
+		type: 'PUT',
+		url: url,
+		success: function(sethttpResult) {
+			$('#response-body-envs').html("ok");
+		},
+		error: function(xhr, status, error) {
+		    console.log(status);
+		    console.log(error);
+		    $('#response-body-envs').html("Error");
+		},
+		dataType: 'json'
+	    });
+    }
+});
+$('#sethttps-btn').click(function() {
+    var envalue=$('#envalue').val().trim();
+    var url= "api/setenv/https_proxy/" + envalue;
+    $('#response-body-envs').html('Please wait ...');
+    if ( envalue == "" ) {
+        $('#response-body-envs').html('Please enter a value.');
+    } else {
+	    $.ajax({
+		type: 'PUT',
+		url: url,
+		success: function(sethttpResult) {
+			$('#response-body-envs').html("ok");
+		},
+		error: function(xhr, status, error) {
+		    console.log(status);
+		    console.log(error);
+		    $('#response-body-envs').html("Error");
+		},
+		dataType: 'json'
+	    });
+    }
+});
+$('#setnoproxy-btn').click(function() {
+    var envalue=$('#envalue').val().trim();
+    var url= "api/setenv/no_proxy/" + envalue;
+    $('#response-body-envs').html('Please wait ...');
+    if ( envalue == "" ) {
+        $('#response-body-envs').html('Please enter a value.');
+    } else {
+	    $.ajax({
+		type: 'PUT',
+		url: url,
+		success: function(sethttpResult) {
+			$('#response-body-envs').html("ok");
+		},
+		error: function(xhr, status, error) {
+		    console.log(status);
+		    console.log(error);
+		    $('#response-body-envs').html("Error");
+		},
+		dataType: 'json'
+	    });
+    }
+});
+$('#unset-btn').click(function() {
+    var url= "api/unsetproxyvars";
+    $.ajax({
+	type: 'PUT',
+	url: url,
+	success: function(sethttpResult) {
+		$('#response-body-envs').html("ok");
+	},
+	error: function(xhr, status, error) {
+	    console.log(status);
+	    console.log(error);
+	    $('#response-body-envs').html("Error");
+	},
+	dataType: 'json'
+    });
+});
 $('#wgetVars-btn').click(function() {
     var url= "api/wget/vars";
     $('#response-body-wget').html('Please wait ...');
@@ -130,12 +212,16 @@ $('#datetime-btn').click(function() {
     });
 });
 var localhost = window.location.hostname
-var restResponse = 'curl "https://' + localhost + '/api/traceroute/' + localhost + '"<br>'
-restResponse += 'curl "https://' + localhost + '/api/traceroute/' + localhost + '/31"<br>'
-restResponse += 'curl "https://' + localhost + '/api/telnet/' + localhost + '/443"<br>'
-restResponse += 'curl "https://' + localhost + '/api/telnet/' + localhost + '/443/8"<br>'
-restResponse += 'curl "https://' + localhost + '/api/wget?url=https://' + localhost + '"<br>'
-restResponse += 'curl "https://' + localhost + '/api/wget/501/?url=https://' + localhost + '"<br>'
-restResponse += 'curl "https://' + localhost + '/api/wget/vars<br>'
-restResponse += 'curl "https://' + localhost + '/api/datetime"<br>'
+var restResponse = 'curl -k -X GET "https://' + localhost + '/api/traceroute/&lt;host&gt;"<br>'
+restResponse += 'curl -k -X GET "https://' + localhost + '/api/traceroute/&lt;host&gt;/&lt;max hops&gt;"<br>'
+restResponse += 'curl -k -X GET "https://' + localhost + '/api/telnet/&lt;host&gt;/&lt;port&gt;"<br>'
+restResponse += 'curl -k -X GET "https://' + localhost + '/api/telnet/&lt;host&gt;/&lt;port&gt;/&lt;timeout&gt;"<br>'
+restResponse += 'curl -k -X GET "https://' + localhost + '/api/wget?url=&lt;host&gt;"<br>'
+restResponse += 'curl -k -X GET "https://' + localhost + '/api/wget/&lt;max chars&gt;?url=&lt;host&gt;"<br>'
+restResponse += 'curl -k -X GET "https://' + localhost + '/api/wget/vars"<br>'
+restResponse += 'curl -k -X PUT "https://' + localhost + '/api/setenv/http_proxy/&lt;value&gt;"<br>'
+restResponse += 'curl -k -X PUT "https://' + localhost + '/api/setenv/https_proxy/&lt;value&gt;"<br>'
+restResponse += 'curl -k -X PUT "https://' + localhost + '/api/setenv/no_proxy/&lt;value&gt;"<br>'
+restResponse += 'curl -k -X PUT "https://' + localhost + '/api/unsetproxyvars"<br>'
+restResponse += 'curl -k -X GET "https://' + localhost + '/api/datetime"<br>'
 $('#response-body-rest').html(restResponse);

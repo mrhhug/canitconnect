@@ -2,7 +2,7 @@
 
 from flask import Flask, render_template, request, Response
 from waitress import serve
-from os import getenv
+from os import getenv, environ
 from subprocess import Popen, PIPE
 from socket import socket, AF_INET, SOCK_STREAM, gaierror
 from errno import errorcode
@@ -50,7 +50,7 @@ def treaceroute(host, maxttl):
 def telnet(host, port, timeout):
         ret = {}
         s = socket(AF_INET, SOCK_STREAM)
-        s.settimeout(timeout)
+        s.settimeout(float(timeout))
         start = time()
         try:
                 result = s.connect_ex((host, int(port)))
@@ -97,6 +97,39 @@ def wgetVars():
 	https_proxy = getenv("https_proxy", "UNSET")
 	no_proxy = getenv("no_proxy", "UNSET")
 	ret = dumps({"http_proxy":http_proxy,"https_proxy":https_proxy,"no_proxy":no_proxy})
+	print ret
+	return Response(ret, status=200, mimetype='application/json')
+
+@app.route('/api/setenv/http_proxy/<value>', methods = ["PUT"])
+def setHttpProxy(value):
+	environ["http_proxy"] = value
+	ret = dumps({"status":"sucess"})
+	print ret
+	return Response(ret, status=200, mimetype='application/json')
+
+@app.route('/api/setenv/https_proxy/<value>', methods = ["PUT"])
+def setHttpsProxy(value):
+	environ["https_proxy"] = value
+	ret = dumps({"status":"sucess"})
+	print ret
+	return Response(ret, status=200, mimetype='application/json')
+
+@app.route('/api/setenv/no_proxy/<value>', methods = ["PUT"])
+def setNoProxy(value):
+	environ["no_proxy"] = value
+	ret = dumps({"status":"sucess"})
+	print ret
+	return Response(ret, status=200, mimetype='application/json')
+
+@app.route('/api/unsetproxyvars', methods = ["PUT"])
+def unsetProxySettings():
+	if environ.get("no_proxy") is not None:
+		del environ["no_proxy"]
+	if environ.get("https_proxy") is not None:
+		del environ["https_proxy"]
+	if environ.get("http_proxy") is not None:
+		del environ["http_proxy"]
+	ret = dumps({"status":"sucess"})
 	print ret
 	return Response(ret, status=200, mimetype='application/json')
 

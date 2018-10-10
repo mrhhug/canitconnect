@@ -20,6 +20,7 @@
 					<li class="nav-btn" id="traceroute"><a>Traceroute</a></li>
 					<li class="nav-btn" id="telnet"><a>Telnet</a></li>
 					<li class="nav-btn" id="wget"><a>Wget</a></li>
+					<li class="nav-btn" id="setenv"><a>Manipulate App Environment Variables</a></li>
 					<li class="nav-btn" id="datetime"><a>Datetime</a></li>
 					<li class="nav-btn" id="REST"><a>REST API</a></li>
 				</ul>
@@ -53,9 +54,22 @@
 							<p>Wget from a diego cell, respects proxy settings. Truncates body at 500 chars. Adds spaces every 100 chars in header.</p>
 							<input type="text" placeholder="https://www.fiserv.com/" id="wgethostname">
 							<button id="wget-btn" class="btn">wget</button>
-							<button id="wgetVars-btn" class="btn">Display related Environmental variables</button>
+							<button id="wgetVars-btn" class="btn">Display app Environmental variables</button>
 						</div>
 						<p class="response-body" id="response-body-wget"></p>
+					</div>	
+				</div>
+				<div class="card" id="setenv-card">
+					<div class="card-contents">
+						<div class="form-div">
+							<p>Manipulate app environment variable</p>
+							<input type="text" placeholder="value" id="envalue">
+							<button id="sethttp-btn" class="btn">set http_proxy</button>
+							<button id="sethttps-btn" class="btn">set https_proxy</button>
+							<button id="setnoproxy-btn" class="btn">set no_proxy</button>
+							<button id="unset-btn" class="btn">unset [http_proxy, http_proxy, no_proxy]</button>
+						</div>
+						<p class="response-body" id="response-body-envs"></p>
 					</div>	
 				</div>
 				<div class="card" id="datetime-card">
