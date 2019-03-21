@@ -137,12 +137,21 @@ main {
 }
 
 .card .form-div * {
-	height: 40px;
+	/* height: 40px; */
 	margin: 5px;
 	font-size: 100%;
 	padding: 6px;
 	text-align: center;
 	border-radius: 2px;
+}
+
+.card .form-div .curl-radio * {
+	height: fit-content;
+}
+
+#curl-postdata-input {
+	height: 200px;
+	width: 100%;
 }
 
 .card .card-contents {

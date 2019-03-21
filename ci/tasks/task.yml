@@ -1,0 +1,19 @@
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: fiserv/clitools
+    tag: latest
+
+inputs:
+  - name: canitconnect
+
+params:
+      PCF_ENV:
+      CF_API:
+      CF_USERNAME:
+      CF_PASSWORD:
+
+run:
+  path: canitconnect/ci/tasks/task.sh

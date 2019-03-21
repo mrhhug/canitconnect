@@ -1,6 +1,6 @@
-#!/usr/bin/python2
+#!/usr/bin/python
 
-from flask import Flask, render_template, request, Response
+from flask import Flask, request, Response, render_template
 from waitress import serve
 from os import getenv, environ
 from subprocess import Popen, PIPE
@@ -9,7 +9,7 @@ from errno import errorcode
 from json import dumps
 from time import time 
 import ssl
-import urllib2
+import urllib.request
 from datetime import datetime
 
 app = Flask(__name__)
@@ -38,87 +38,130 @@ def root():
 
 @app.route('/api/traceroute/<host>', defaults={'maxttl': "30"}, methods = ["GET"])
 @app.route('/api/traceroute/<host>/<maxttl>', methods = ["GET"])
-def treaceroute(host, maxttl):
+def traceroute(host, maxttl):
 	p = Popen(["traceroute", "-m", maxttl, host], stdout=PIPE, stderr=PIPE)
-	results = p.communicate()
-	ret =  dumps({"stdout":results[0],"stderr":results[1]})
-	print ret
+	results = p.communicate() 
+	exitcode = p.returncode
+	stdout = results[0].decode("utf-8")
+	stderr = results[1].decode("utf-8").split('\n')[0]
+	ret =  dumps({"stdout":stdout,"stderr":stderr,"exitcode":exitcode})
+	print(ret)
 	return Response(ret, status=200, mimetype='application/json')
 
 @app.route('/api/telnet/<host>/<port>', defaults={'timeout': 7}, methods = ["GET"])
 @app.route('/api/telnet/<host>/<port>/<timeout>', methods = ["GET"])
 def telnet(host, port, timeout):
-        ret = {}
-        s = socket(AF_INET, SOCK_STREAM)
-        s.settimeout(float(timeout))
-        start = time()
-        try:
-                result = s.connect_ex((host, int(port)))
-        except gaierror:
-                ret['return'] = 1
-                ret['status'] = 404
-                ret['elapsed'] = -1
-                return dumps(ret)
-        elapsed = format(time()-start, '.4f')
-        s.close()
-        if result:
-                ret['return'] = 1
-                ret['status'] = 408
-                ret['elapsed'] = elapsed
-        else:
-                ret['return'] = 0
-                ret['status'] = 200
-                ret['elapsed'] = elapsed
-        print dumps(ret)
+	ret = {}
+	s = socket(AF_INET, SOCK_STREAM)
+	s.settimeout(float(timeout))
+	start = time()
+	try:
+		result = s.connect_ex((host, int(port)))
+	except gaierror:
+		ret['return'] = 1
+		ret['status'] = 404
+		ret['elapsed'] = -1
+		return dumps(ret)
+	elapsed = format(time()-start, '.4f')
+	s.close()
+	if result:
+		ret['return'] = 1
+		ret['status'] = 408
+		ret['elapsed'] = elapsed
+	else:
+		ret['return'] = 0
+		ret['status'] = 200
+		ret['elapsed'] = elapsed
+	print(dumps(ret))
 	return Response(dumps(ret), status=200, mimetype='application/json')
 
-@app.route('/api/wget', defaults={'chars': 500}, methods = ["GET"])
-@app.route('/api/wget/<chars>', methods = ["GET"])
-def wget(chars):
-	host = request.args.get('url')
+@app.route('/api/curl', defaults={'chars': 500}, methods = ["POST"])
+@app.route('/api/curl/<chars>', methods = ["POST"])
+def curl(chars):
+	if not request.is_json:
+		ret = dumps({"message":"set your 'Content-Type' to 'application/json' and send me a json in the payload"})
+		return Response(ret, status=415, mimetype='application/json')
+	myjson = request.get_json()
+	inputURL = myjson.get('url', None)
+	inputMethod = myjson.get('method', None)
+	inputData = myjson.get('data', "")
+	if None in (inputMethod, inputURL):
+		ret = dumps({"message":"method and url must be specified in the post data"})
+		return Response(ret, status=422, mimetype='application/json')
+	if inputMethod is 'POST':
+		req = urllib.request.Request(url=inputURL, data=inputData, method=inputMethod)
+	else:
+		req = urllib.request.Request(url=inputURL, method=inputMethod)
 	try:
-		r = urllib2.urlopen(host, timeout = 3, context=ssl._create_unverified_context())
-	except : 
-		return dumps({"code":"Exception" ,"url":"Exception","body":"Exception","headers":["Exception"]})
-	body = unicode(r.read(), errors='ignore')
-	if chars > 0:
-		body = body[:int(chars)] 
-	url = r.geturl()
-	code = r.code
-	headers = r.info().headers
-	r.close()
-	ret = dumps({"code":code,"url":url,"body":body,"headers":headers})
-	print ret
+		r = urllib.request.urlopen(req)
+		body = str(r.read(int(chars)), errors='ignore')
+		url = r.geturl()
+		code = r.code
+		headers = r.getheaders()
+		ret = dumps({"method": inputMethod, "code":code,"url":url,"body":body,"headers":headers})
+	except urllib.error.HTTPError as e:
+		url = e.geturl()
+		code = e.code
+		reason = e.reason
+		ret = dumps({"method": inputMethod, "code":code,"url":url,"reason": reason})
+	except urllib.error.URLError as e:
+		reason = str(e.reason).replace("[Errno -2] ", "")
+		ret = dumps({"url":inputURL, "reason": reason})
+	print(ret)
 	return Response(ret, status=200, mimetype='application/json')
 
-@app.route('/api/wget/vars', methods = ["GET"])
-def wgetVars():
+@app.route('/api/getenv', methods = ["GET"])
+def getEnvVars():
 	http_proxy = getenv("http_proxy", "UNSET")
 	https_proxy = getenv("https_proxy", "UNSET")
 	no_proxy = getenv("no_proxy", "UNSET")
 	ret = dumps({"http_proxy":http_proxy,"https_proxy":https_proxy,"no_proxy":no_proxy})
-	print ret
+	print(ret)
 	return Response(ret, status=200, mimetype='application/json')
 
-@app.route('/api/setenv/http_proxy/<value>', methods = ["PUT"])
-def setHttpProxy(value):
-	environ["http_proxy"] = value
+@app.route('/api/setenv/http_proxy', methods = ["POST"])
+def setHttpProxy():
+	if not request.is_json:
+		ret = dumps({"message":"set your content type to json and send me a json in the payload"})
+		return Response(ret, status=415, mimetype='application/json')
+	myjson = request.get_json()
+	inputData = myjson.get('data', None)
+	if inputData is None:
+		ret = dumps({"message":"I need a 'data' key"})
+		return Response(ret, status=422, mimetype='application/json')
+	environ["http_proxy"] = inputData
 	ret = dumps({"status":"sucess"})
-	print ret
+	print(ret)
 	return Response(ret, status=200, mimetype='application/json')
 
-@app.route('/api/setenv/https_proxy/<value>', methods = ["PUT"])
-def setHttpsProxy(value):
-	environ["https_proxy"] = value
+@app.route('/api/setenv/https_proxy', methods = ["POST"])
+def setHttpsProxy():
+	if not request.is_json:
+		ret = dumps({"message":"set your content type to json and send me a json in the payload"})
+		return Response(ret, status=415, mimetype='application/json')
+	myjson = request.get_json()
+	inputData = myjson.get('data', None)
+	if inputData is None:
+		ret = dumps({"message":"I need a 'data' key"})
+		return Response(ret, status=422, mimetype='application/json')
+	environ["https_proxy"] = inputData
 	ret = dumps({"status":"sucess"})
-	print ret
+	print(ret)
 	return Response(ret, status=200, mimetype='application/json')
 
-@app.route('/api/setenv/no_proxy/<value>', methods = ["PUT"])
-def setNoProxy(value):
-	environ["no_proxy"] = value
+@app.route('/api/setenv/no_proxy', methods = ["POST"])
+def setNoProxy():
+	if not request.is_json:
+		ret = dumps({"message":"set your content type to json and send me a json in the payload"})
+		return Response(ret, status=415, mimetype='application/json')
+	myjson = request.get_json()
+	inputData = myjson.get('data', None)
+	if inputData is None:
+		ret = dumps({"message":"I need a 'data' key"})
+		return Response(ret, status=422, mimetype='application/json')
+	environ["no_proxy"] = inputData
 	ret = dumps({"status":"sucess"})
-	print ret
+	print(ret)
 	return Response(ret, status=200, mimetype='application/json')
 
 @app.route('/api/unsetproxyvars', methods = ["PUT"])
@@ -130,14 +173,15 @@ def unsetProxySettings():
 	if environ.get("http_proxy") is not None:
 		del environ["http_proxy"]
 	ret = dumps({"status":"sucess"})
-	print ret
+	print(ret)
 	return Response(ret, status=200, mimetype='application/json')
 
 @app.route('/api/datetime', methods = ["GET"])
 def datatimenow():
 	ret = dumps(dict(datetimestring=str(datetime.now())))
-	print ret
+	print(ret)
 	return Response(ret, status=200, mimetype='application/json')
 
 if __name__ == '__main__':
 	serve(app, port=port)
+

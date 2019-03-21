@@ -1,0 +1,147 @@
+resource_types:
+- name: email
+  type: docker-image
+  source:
+    repository: ((docker_registry))/pcfseceng/email-resource
+    insecure_registries: [ ((docker_registry)) ]
+
+resources:
+- name: canitconnect
+  type: git
+  source:
+    uri: https://git-enterprise-jc.onefiserv.net/PCF/PlatformTestingApps/canitconnect
+    private_key: ((git_key.private_key))
+    branch: master
+    skip_ssl_verification: true
+
+- name: pipeline_image
+  type: docker-image
+  source:
+    repository: ((docker_registry))/fiserv/clitools
+    insecure_registries: [ ((docker_registry)) ]
+
+- name: send-an-email
+  type: email
+  source:
+    smtp:
+      host: ((smtp_host))
+      port: "25"
+      skip_ssl_validation: true
+      anonymous: true
+    from: "PXE@fiserv.com"
+    to: [ "pcfadmins@fiservcorp.onmicrosoft.com" ]
+
+jobs:
+- name: push-canitconnect-pxa
+  plan:
+  - get: canitconnect
+    trigger: true
+  - get: pipeline_image
+  - task: push-app
+    file: canitconnect/ci/tasks/task.yml
+    image: pipeline_image
+    params:
+      CF_API: ((pxa_cf_api))
+      CF_USERNAME: ((pcfadmins_developeruser.username))
+      CF_PASSWORD: ((pcfadmins_developeruser.password))
+      PCF_ENV: "pxa"
+  on_failure:
+    put: send-an-email
+    params:
+      subject_text: "PXA-canitconnect job failed"
+      body_text: "PXA canitconnect pipeline failed "
+
+- name: push-canitconnect-jcc
+  plan:
+  - get: canitconnect
+    trigger: true
+  - get: pipeline_image
+  - task: push-app
+    file: canitconnect/ci/tasks/task.yml
+    image: pipeline_image
+    params:
+      CF_API: ((jcc_cf_api))
+      CF_USERNAME: ((pcfadmins_developeruser.username))
+      CF_PASSWORD: ((pcfadmins_developeruser.password))
+      PCF_ENV: "jcc"
+  on_failure:
+    put: send-an-email
+    params:
+      subject_text: "JCC-canitconnect job failed"
+      body_text: "JCC canitconnect pipeline failed "
+
+- name: push-canitconnect-jca
+  plan:
+  - get: canitconnect
+    trigger: true
+  - get: pipeline_image
+  - task: push-app
+    file: canitconnect/ci/tasks/task.yml
+    image: pipeline_image
+    params:
+      CF_API: ((jca_cf_api))
+      CF_USERNAME: ((pcfadmins_developeruser.username))
+      CF_PASSWORD: ((pcfadmins_developeruser.password))
+      PCF_ENV: "jca"
+  on_failure:
+    put: send-an-email
+    params:
+      subject_text: "JCA-canitconnect job failed"
+      body_text: "JCA canitconnect pipeline failed "
+
+- name: push-canitconnect-pxc
+  plan:
+  - get: canitconnect
+    trigger: true
+  - get: pipeline_image
+  - task: push-app
+    file: canitconnect/ci/tasks/task.yml
+    image: pipeline_image
+    params:
+      CF_API: ((pxc_cf_api))
+      CF_USERNAME: ((pcfadmins_developeruser.username))
+      CF_PASSWORD: ((pcfadmins_developeruser.password))
+      PCF_ENV: "pxc"
+  on_failure:
+    put: send-an-email
+    params:
+      subject_text: "PXC-canitconnect job failed"
+      body_text: "PXC canitconnect pipeline failed "
+
+- name: push-canitconnect-lva
+  plan:
+  - get: canitconnect
+    trigger: true
+  - get: pipeline_image
+  - task: push-app
+    file: canitconnect/ci/tasks/task.yml
+    image: pipeline_image
+    params:
+      CF_API: ((lva_cf_api))
+      CF_USERNAME: ((pcfadmins_developeruser.username))
+      CF_PASSWORD: ((pcfadmins_developeruser.password))
+      PCF_ENV: "lva"
+  on_failure:
+    put: send-an-email
+    params:
+      subject_text: "LVA-canitconnect job failed"
+      body_text: "LVA canitconnect pipeline failed "
+
+- name: push-canitconnect-lvc
+  plan:
+  - get: canitconnect
+    trigger: true
+  - get: pipeline_image
+  - task: push-app
+    file: canitconnect/ci/tasks/task.yml
+    image: pipeline_image
+    params:
+      CF_API: ((lvc_cf_api))
+      CF_USERNAME: ((pcfadmins_developeruser.username))
+      CF_PASSWORD: ((pcfadmins_developeruser.password))
+      PCF_ENV: "lvc"
+  on_failure:
+    put: send-an-email
+    params:
+      subject_text: "LVC-canitconnect job failed"
+      body_text: "LVC canitconnect pipeline failed "

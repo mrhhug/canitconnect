@@ -1,0 +1,14 @@
+image: git-enterprise-jc.onefiserv.net:4443/pcf/platformtestingapps/canitconnect:latest
+
+before_script:
+  - env
+  - ls -la
+  - whoami
+  - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN git-enterprise-jc.onefiserv.net:4443 
+
+test:
+  script:
+    - docker run -t --name=canitconnectTester -d -v $(pwd):/app git-enterprise-jc.onefiserv.net:4443/pcf/platformtestingapps/canitconnect
+    - docker exec canitconnectTester /usr/bin/python3 /app/unit_test.py
+    - docker stop canitconnectTester
+    - docker rm canitconnectTester
